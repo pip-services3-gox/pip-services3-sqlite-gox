@@ -115,6 +115,8 @@ func InheritSqlitePersistence[T any](overrides ISqlitePersistenceOverrides[T], t
 		MaxPageSize:      100,
 		TableName:        tableName,
 		isTerminated:     make(chan struct{}),
+		JsonConvertor:    cconv.NewDefaultCustomTypeJsonConvertor[T](),
+		JsonMapConvertor: cconv.NewDefaultCustomTypeJsonConvertor[map[string]any](),
 	}
 
 	c.DependencyResolver = cref.NewDependencyResolver()
