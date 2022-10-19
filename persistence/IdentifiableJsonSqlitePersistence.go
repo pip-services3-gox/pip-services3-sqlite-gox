@@ -233,10 +233,10 @@ func (c *IdentifiableJsonSqlitePersistence[T, K]) UpdatePartially(ctx context.Co
 	}
 
 	result, convErr = c.Overrides.ConvertToPublic(qResult)
-	if convErr == nil {
+	if convErr != nil {
+		return result, convErr
+	} else {
 		c.IdentifiableSqlitePersistence.Logger.Trace(ctx, correlationId, "Updated partially in %s with id = %s", c.IdentifiableSqlitePersistence.TableName, id)
 		return result, nil
-	} else {
-		return result, convErr
 	}
 }

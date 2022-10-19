@@ -7,7 +7,6 @@ import (
 	cerr "github.com/pip-services3-gox/pip-services3-commons-gox/errors"
 	cpersist "github.com/pip-services3-gox/pip-services3-data-gox/persistence"
 
-	cconv "github.com/pip-services3-gox/pip-services3-commons-gox/convert"
 	cdata "github.com/pip-services3-gox/pip-services3-commons-gox/data"
 )
 
@@ -108,7 +107,7 @@ func InheritIdentifiableSqlitePersistence[T any, K any](overrides ISqlitePersist
 	}
 
 	c := &IdentifiableSqlitePersistence[T, K]{}
-	c.SqlitePersistence = InheritSqlitePersistence[T](overrides, tableName)
+	c.SqlitePersistence = InheritSqlitePersistence(overrides, tableName)
 
 	return c
 }
@@ -178,12 +177,13 @@ func (c *IdentifiableSqlitePersistence[T, K]) GetOneById(ctx context.Context, co
 
 	result, err := c.Overrides.ConvertToPublic(qResult)
 
-	if err == nil {
-		c.Logger.Trace(ctx, correlationId, "Retrieved from %s with id = %s", c.TableName, id)
-		return result, err
+	if err != nil {
+		c.Logger.Trace(ctx, correlationId, "Nothing found from %s with id = %s", c.TableName, id)
+		return item, err
 	}
-	c.Logger.Trace(ctx, correlationId, "Nothing found from %s with id = %s", c.TableName, id)
-	return item, err
+	c.Logger.Trace(ctx, correlationId, "Retrieved from %s with id = %s", c.TableName, id)
+	return result, err
+
 }
 
 // Create a data item.
@@ -239,11 +239,11 @@ func (c *IdentifiableSqlitePersistence[T, K]) Set(ctx context.Context, correlati
 	}
 
 	result, convErr = c.Overrides.ConvertToPublic(qResult)
-	if convErr == nil {
+	if convErr != nil {
+		return result, convErr
+	} else {
 		c.Logger.Trace(ctx, correlationId, "Set in %s with id = %s", c.TableName, id)
 		return result, nil
-	} else {
-		return result, convErr
 	}
 }
 
@@ -277,11 +277,12 @@ func (c *IdentifiableSqlitePersistence[T, K]) Update(ctx context.Context, correl
 	}
 
 	result, convErr = c.Overrides.ConvertToPublic(qResult)
-	if convErr == nil {
+	if convErr != nil {
+		return result, convErr
+	} else {
 		c.Logger.Trace(ctx, correlationId, "Update in %s with id = %s", c.TableName, id)
 		return result, nil
-	} else {
-		return result, convErr
+
 	}
 }
 
@@ -316,11 +317,12 @@ func (c *IdentifiableSqlitePersistence[T, K]) UpdatePartially(ctx context.Contex
 	}
 
 	result, convErr = c.Overrides.ConvertToPublic(qResult)
-	if convErr == nil {
+	if convErr != nil {
+		return result, convErr
+	} else {
 		c.Logger.Trace(ctx, correlationId, "Update partially in %s with id = %s", c.TableName, id)
 		return result, nil
-	} else {
-		return result, convErr
+
 	}
 }
 
@@ -345,11 +347,12 @@ func (c *IdentifiableSqlitePersistence[T, K]) DeleteById(ctx context.Context, co
 	}
 
 	result, convErr := c.Overrides.ConvertToPublic(qResult)
-	if convErr == nil {
+	if convErr != nil {
+		return result, convErr
+	} else {
 		c.Logger.Trace(ctx, correlationId, "Deleted from %s with id = %s", c.TableName, id)
 		return result, nil
-	} else {
-		return result, convErr
+
 	}
 }
 
@@ -366,28 +369,14 @@ func (c *IdentifiableSqlitePersistence[T, K]) DeleteByIds(ctx context.Context, c
 
 	query := "DELETE FROM " + c.QuotedTableName() + " WHERE \"id\" IN(" + paramsStr + ")"
 
-	qResult, qErr := c.Client.QueryContext(ctx, query, ItemsToAnySlice[K](ids)...)
+	qResult, qErr := c.Client.ExecContext(ctx, query, ItemsToAnySlice(ids)...)
 	if qErr != nil {
 		return qErr
 	}
-	defer qResult.Close()
 
-	if !qResult.Next() {
-		return qResult.Err()
+	count, err := qResult.RowsAffected()
+	if count != 0 {
+		c.Logger.Trace(ctx, correlationId, "Deleted %d items from %s", count, c.TableName)
 	}
-
-	var count int64 = 0
-	var cnt interface{}
-	err := qResult.Scan(&cnt)
-	if err != nil {
-		cnt = 0
-	}
-	count = cconv.LongConverter.ToLong(cnt)
-	if err == nil {
-		count = cconv.LongConverter.ToLong(cnt)
-		if count != 0 {
-			c.Logger.Trace(ctx, correlationId, "Deleted %d items from %s", count, c.TableName)
-		}
-	}
-	return qResult.Err()
+	return err
 }

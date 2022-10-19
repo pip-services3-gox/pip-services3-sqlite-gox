@@ -87,12 +87,13 @@ type ISqlitePersistenceOverrides[T any] interface {
 //
 //		result, err := c.Overrides.ConvertToPublic(qResult)
 //
-//		if err == nil {
-//			c.Logger.Trace(ctx, correlationId, "Retrieved from %s with name = %s", c.TableName, name)
-//			return result, err
+//		if err != nil {
+//			c.Logger.Trace(ctx, correlationId, "Nothing found from %s with name = %s", c.TableName, name)
+//			return item, err
 //		}
-//		c.Logger.Trace(ctx, correlationId, "Nothing found from %s with name = %s", c.TableName, name)
-//		return item, err
+//		c.Logger.Trace(ctx, correlationId, "Retrieved from %s with name = %s", c.TableName, name)
+//		return result, err
+//
 //	}
 //
 //	func (c *MySqlitePersistence) Set(ctx context.Context, correlationId string, item MyData) (result MyData, err error) {
@@ -124,11 +125,11 @@ type ISqlitePersistenceOverrides[T any] interface {
 //		}
 //
 //		result, convErr = c.Overrides.ConvertToPublic(qResult)
-//		if convErr == nil {
+//		if convErr != nil {
+//			return result, convErr
+//		} else {
 //			c.Logger.Trace(ctx, correlationId, "Set in %s with id = %s", c.TableName, id)
 //			return result, nil
-//		} else {
-//			return result, convErr
 //		}
 //	}
 //
@@ -285,7 +286,7 @@ func (c *SqlitePersistence[T]) EnsureIndex(name string, keys map[string]string, 
 	}
 
 	fields := ""
-	for key, _ := range keys {
+	for key := range keys {
 		if fields != "" {
 			fields += ", "
 		}
@@ -526,7 +527,7 @@ func (c *SqlitePersistence[T]) Close(ctx context.Context, correlationId string) 
 func (c *SqlitePersistence[T]) Clear(ctx context.Context, correlationId string) error {
 	// Return error if collection is not set
 	if c.TableName == "" {
-		return errors.New("Table name is not defined")
+		return errors.New("TABLE NAME IS NOT DEFINED")
 	}
 
 	_, err := c.Client.ExecContext(ctx, "DELETE FROM "+c.QuotedTableName())
@@ -578,13 +579,14 @@ func (c *SqlitePersistence[T]) checkTableExists(ctx context.Context) (bool, erro
 	// Check if table exist to determine either to auto create objects
 	query := "SELECT * FROM '" + c.TableName + "' LIMIT 1"
 	_, qErr := c.Client.ExecContext(ctx, query)
-	if qErr == nil {
-		return true, nil
+	if qErr != nil {
+		if !strings.Contains(qErr.Error(), "no such table") {
+			return false, qErr
+		}
+		return false, nil
 	}
-	if !strings.Contains(qErr.Error(), "no such table") {
-		return false, qErr
-	}
-	return false, nil
+
+	return true, nil
 }
 
 // GenerateColumns generates a list of column names to use in SQL statements like: "column1,column2,column3"
@@ -740,10 +742,10 @@ func (c *SqlitePersistence[T]) GetPageByFilter(ctx context.Context, correlationI
 			return *cdata.NewEmptyDataPage[T](), err
 		}
 
-		return *cdata.NewDataPage[T](items, int(count)), nil
+		return *cdata.NewDataPage(items, int(count)), nil
 	}
 
-	return *cdata.NewDataPage[T](items, cdata.EmptyTotalValue), rows.Err()
+	return *cdata.NewDataPage(items, cdata.EmptyTotalValue), rows.Err()
 }
 
 // GetCountByFilter gets a number of data items retrieved by a given filter.
@@ -952,24 +954,16 @@ func (c *SqlitePersistence[T]) DeleteByFilter(ctx context.Context, correlationId
 		query += " WHERE " + filter
 	}
 
-	qResult, qErr := c.Client.Query(query)
-	defer qResult.Close()
-
+	qResult, qErr := c.Client.ExecContext(ctx, query)
 	if qErr != nil {
 		return qErr
 	}
-	defer qResult.Close()
 
-	var count int64 = 0
-	if !qResult.Next() {
-		return qResult.Err()
-	}
-	var cnt interface{}
-	err := qResult.Scan(&cnt)
+	count, err := qResult.RowsAffected()
 	if err != nil {
-		cnt = 0
+		return err
 	}
-	count = cconv.LongConverter.ToLong(cnt)
+
 	c.Logger.Trace(ctx, correlationId, "Deleted %d items from %s", count, c.TableName)
 	return nil
 }
