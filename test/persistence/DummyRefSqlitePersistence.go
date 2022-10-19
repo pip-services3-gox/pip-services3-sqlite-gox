@@ -9,12 +9,12 @@ import (
 )
 
 type DummyRefSqlitePersistence struct {
-	persist.IdentifiableSqlitePersistence[*fixtures.Dummy, string]
+	*persist.IdentifiableSqlitePersistence[*fixtures.Dummy, string]
 }
 
 func NewDummyRefSqlitePersistence() *DummyRefSqlitePersistence {
 	c := &DummyRefSqlitePersistence{}
-	c.IdentifiableSqlitePersistence = *persist.InheritIdentifiableSqlitePersistence[*fixtures.Dummy, string](c, "dummies")
+	c.IdentifiableSqlitePersistence = persist.InheritIdentifiableSqlitePersistence[*fixtures.Dummy, string](c, "dummies")
 	return c
 }
 

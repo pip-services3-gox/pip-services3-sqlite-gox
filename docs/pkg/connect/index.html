@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>connect - Go Documentation Server</title>
+
+<link type="text/css" rel="stylesheet" href="../../lib/godoc/style.css">
+
+<script>window.initFuncs = [];</script>
+<script src="../../lib/godoc/jquery.js" defer></script>
+
+
+
+<script>var goVersion = "go1.18.7";</script>
+<script src="../../lib/godoc/godocs.js" defer></script>
+</head>
+<body>
+
+<div id='lowframe' style="position: fixed; bottom: 0; left: 0; height: 0; width: 100%; border-top: thin solid grey; background-color: white; overflow: auto;">
+...
+</div><!-- #lowframe -->
+
+<div id="topbar" class="wide"><div class="container">
+<div class="top-heading" id="heading-wide"><a href="../index.html">Go Documentation Server</a></div>
+<div class="top-heading" id="heading-narrow"><a href="../index.html">GoDoc</a></div>
+<a href="index.html#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>
+<form method="GET" action="http://localhost:6060/search">
+<div id="menu">
+
+<span class="search-box"><input type="search" id="search" name="q" placeholder="Search" aria-label="Search" required><button type="submit"><span><!-- magnifying glass: --><svg width="24" height="24" viewBox="0 0 24 24"><title>submit search</title><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M0 0h24v24H0z" fill="none"/></svg></span></button></span>
+</div>
+</form>
+
+</div></div>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package connect
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "connect"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="index.html#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="index.html#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+				
+			</div>
+		</div>
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+			
+			
+				
+				<dd><a href="index.html#SqliteConnection">type SqliteConnection</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#NewSqliteConnection">func NewSqliteConnection() *SqliteConnection</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnection.Close">func (c *SqliteConnection) Close(ctx context.Context, correlationId string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnection.Configure">func (c *SqliteConnection) Configure(ctx context.Context, config *cconf.ConfigParams)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnection.GetConnection">func (c *SqliteConnection) GetConnection() *sql.DB</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnection.GetDatabase">func (c *SqliteConnection) GetDatabase() *sql.DB</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnection.GetDatabaseName">func (c *SqliteConnection) GetDatabaseName() string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnection.IsOpen">func (c *SqliteConnection) IsOpen() bool</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnection.Open">func (c *SqliteConnection) Open(ctx context.Context, correlationId string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnection.SetReferences">func (c *SqliteConnection) SetReferences(ctx context.Context, references crefer.IReferences)</a></dd>
+				
+			
+				
+				<dd><a href="index.html#SqliteConnectionResolver">type SqliteConnectionResolver</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#NewSqliteConnectionResolver">func NewSqliteConnectionResolver() *SqliteConnectionResolver</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnectionResolver.Configure">func (c *SqliteConnectionResolver) Configure(ctx context.Context, config *cconf.ConfigParams)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnectionResolver.Resolve">func (c *SqliteConnectionResolver) Resolve(ctx context.Context, correlationId string) (uri string, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#SqliteConnectionResolver.SetReferences">func (c *SqliteConnectionResolver) SetReferences(ctx context.Context, references crefer.IReferences)</a></dd>
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="http://localhost:6060/src/connect/SqliteConnection.go">SqliteConnection.go</a>
+			
+				<a href="http://localhost:6060/src/connect/SqliteConnectionResolver.go">SqliteConnectionResolver.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		
+
+		
+		
+		
+		
+			
+			
+			<h2 id="SqliteConnection">type <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=2574:3009#L39">SqliteConnection</a>
+				<a class="permalink" href="index.html#SqliteConnection">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+SqliteConnection struct help creates new connections to SQLite
+SQLite connection using plain driver.
+</p>
+<p>
+By defining a connection and sharing it through multiple persistence components
+you can reduce number of used database connections.
+</p>
+<pre>Configuration parameters:
+	- connection(s):
+		- discovery_key:             (optional) a key to retrieve the connection from IDiscovery
+		- host:                      host name or IP address
+		- port:                      port number (default: 8082)
+		- uri:                       resource URI or connection string with all parameters in it
+	- credential(s):
+		- store_key:                 (optional) a key to retrieve the credentials from ICredentialStore
+		- username:                  (optional) user name
+		- password:                  (optional) user password
+	- options:
+		- max_pool_size:             (optional) maximum connection pool size (default: 2)
+		- keep_alive:                (optional) enable connection keep alive in ms, if zero connection are keeped indefinitely (default: 0)
+		- connect_timeout:           (optional) connection timeout in milliseconds (default: 5000)
+		- socket_timeout:            (optional) socket timeout in milliseconds (default: 360000)
+		- auto_reconnect:            (optional) enable auto reconnection (default: true) (Not used)
+		- reconnect_interval:        (optional) reconnection interval in milliseconds (default: 1000) (Not used)
+		- max_page_size:             (optional) maximum page size (default: 100)
+		- replica_set:               (optional) name of replica set
+		- ssl:                       (optional) enable SSL connection (default: false) (Not release in this version)
+		- auth_source:               (optional) authentication source
+		- debug:                     (optional) enable debug output (default: false). (Not used)
+
+References:
+	- *:logger:*:*:1.0           (optional) ILogger components to pass log messages
+	- *:discovery:*:*:1.0        (optional) IDiscovery services
+	- *:credential-store:*:*:1.0 (optional) Credential stores to resolve credentials
+</pre>
+
+			<pre>type SqliteConnection struct {
+
+    <span class="comment">// The logger.</span>
+<span id="SqliteConnection.Logger"></span>    Logger *<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-components-gox/log/">clog</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-components-gox/log/#CompositeLogger">CompositeLogger</a>
+    <span class="comment">//   The connection resolver.</span>
+<span id="SqliteConnection.ConnectionResolver"></span>    ConnectionResolver *<a href="index.html#SqliteConnectionResolver">SqliteConnectionResolver</a>
+    <span class="comment">//   The configuration options.</span>
+<span id="SqliteConnection.Options"></span>    Options *<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/config/">cconf</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/config/#ConfigParams">ConfigParams</a>
+    <span class="comment">//   The SQLite connection object.</span>
+<span id="SqliteConnection.Connection"></span>    Connection *<a href="http://localhost:6060/pkg/database/sql/">sql</a>.<a href="http://localhost:6060/pkg/database/sql/#DB">DB</a>
+    <span class="comment">//   The SQLite database name.</span>
+<span id="SqliteConnection.DatabaseName"></span>    DatabaseName <a href="http://localhost:6060/pkg/builtin/#string">string</a>
+    <span class="comment">// contains filtered or unexported fields</span>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewSqliteConnection">func <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=3143:3187#L57">NewSqliteConnection</a>
+					<a class="permalink" href="index.html#NewSqliteConnection">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func NewSqliteConnection() *<a href="index.html#SqliteConnection">SqliteConnection</a></pre>
+				<p>
+NewSqliteConnection are creates a new instance of the connection component.
+Returns *SqliteConnection with default config
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="SqliteConnection.Close">func (*SqliteConnection) <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=5773:5854#L134">Close</a>
+					<a class="permalink" href="index.html#SqliteConnection.Close">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnection">SqliteConnection</a>) Close(ctx <a href="http://localhost:6060/pkg/context/">context</a>.<a href="http://localhost:6060/pkg/context/#Context">Context</a>, correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>
+Close method is closes component and frees used resources.
+</p>
+<pre>Parameters:
+	- ctx context.Context
+	- correlationId string(optional) transaction id to trace execution through call chain.
+Returns: error or nil when no errors occurred.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="SqliteConnection.Configure">func (*SqliteConnection) <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=3841:3926#L80">Configure</a>
+					<a class="permalink" href="index.html#SqliteConnection.Configure">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnection">SqliteConnection</a>) Configure(ctx <a href="http://localhost:6060/pkg/context/">context</a>.<a href="http://localhost:6060/pkg/context/#Context">Context</a>, config *<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/config/">cconf</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/config/#ConfigParams">ConfigParams</a>)</pre>
+				<p>
+Configure is configures component by passing configuration parameters.
+</p>
+<pre>Parameters:
+	- ctx context.Context
+	- config  *cconf.ConfigParams configuration parameters to be set.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="SqliteConnection.GetConnection">func (*SqliteConnection) <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=6319:6369#L155">GetConnection</a>
+					<a class="permalink" href="index.html#SqliteConnection.GetConnection">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnection">SqliteConnection</a>) GetConnection() *<a href="http://localhost:6060/pkg/database/sql/">sql</a>.<a href="http://localhost:6060/pkg/database/sql/#DB">DB</a></pre>
+				<p>
+GetConnection method return work connection object
+</p>
+<pre>Returns: *sql.DB
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="SqliteConnection.GetDatabase">func (*SqliteConnection) <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=6476:6524#L162">GetDatabase</a>
+					<a class="permalink" href="index.html#SqliteConnection.GetDatabase">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnection">SqliteConnection</a>) GetDatabase() *<a href="http://localhost:6060/pkg/database/sql/">sql</a>.<a href="http://localhost:6060/pkg/database/sql/#DB">DB</a></pre>
+				<p>
+GetDatabase method retrun work database object
+</p>
+<pre>Returns: *sql.DB
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="SqliteConnection.GetDatabaseName">func (*SqliteConnection) <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=6635:6686#L169">GetDatabaseName</a>
+					<a class="permalink" href="index.html#SqliteConnection.GetDatabaseName">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnection">SqliteConnection</a>) GetDatabaseName() <a href="http://localhost:6060/pkg/builtin/#string">string</a></pre>
+				<p>
+GetDatabaseName method reruns name of work database
+</p>
+<pre>Returns: string
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="SqliteConnection.IsOpen">func (*SqliteConnection) <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=4616:4656#L99">IsOpen</a>
+					<a class="permalink" href="index.html#SqliteConnection.IsOpen">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnection">SqliteConnection</a>) IsOpen() <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+				<p>
+IsOpen method is checks if the component is opened.
+</p>
+<pre>Returns: true if the component has been opened and false otherwise.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="SqliteConnection.Open">func (*SqliteConnection) <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=4925:5005#L109">Open</a>
+					<a class="permalink" href="index.html#SqliteConnection.Open">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnection">SqliteConnection</a>) Open(ctx <a href="http://localhost:6060/pkg/context/">context</a>.<a href="http://localhost:6060/pkg/context/#Context">Context</a>, correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>
+Open method is opens the component.
+</p>
+<pre>Parameters:
+	- ctx context.Context
+	- correlationId string (optional) transaction id to trace execution through call chain.
+Returns: error or nil when no errors occurred.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="SqliteConnection.SetReferences">func (*SqliteConnection) <a href="http://localhost:6060/src/connect/SqliteConnection.go?s=4287:4379#L91">SetReferences</a>
+					<a class="permalink" href="index.html#SqliteConnection.SetReferences">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnection">SqliteConnection</a>) SetReferences(ctx <a href="http://localhost:6060/pkg/context/">context</a>.<a href="http://localhost:6060/pkg/context/#Context">Context</a>, references <a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/refer/">crefer</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/refer/#IReferences">IReferences</a>)</pre>
+				<p>
+SetReferences are sets references to dependent components.
+</p>
+<pre>Parameters:
+	- ctx context.Context
+	- references crefer.IReferences references to locate the component dependencies.
+</pre>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="SqliteConnectionResolver">type <a href="http://localhost:6060/src/connect/SqliteConnectionResolver.go?s=1471:1662#L22">SqliteConnectionResolver</a>
+				<a class="permalink" href="index.html#SqliteConnectionResolver">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+SqliteConnectionResolver a helper struct  that resolves SQLite connection and credential parameters,
+validates them and generates a connection URI.
+It is able to process multiple connections to SQLite cluster nodes.
+</p>
+<pre>Configuration parameters
+	- connection(s):
+		- discovery_key:               (optional) a key to retrieve the connection from IDiscovery
+		- host:                        host name or IP address
+		- port:                        port number (default: 8082)
+		- database:                    database name
+		- uri:                         resource URI or connection string with all parameters in it
+	- credential(s):
+		- store_key:                   (optional) a key to retrieve the credentials from ICredentialStore
+		- username:                    user name
+		- password:                    user password
+References
+	- *:discovery:*:*:1.0             (optional) IDiscovery services
+	- *:credential-store:*:*:1.0      (optional) Credential stores to resolve credentials
+</pre>
+
+			<pre>type SqliteConnectionResolver struct {
+    <span class="comment">//The connections resolver.</span>
+<span id="SqliteConnectionResolver.ConnectionResolver"></span>    ConnectionResolver <a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-components-gox/connect/">ccon</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-components-gox/connect/#ConnectionResolver">ConnectionResolver</a>
+    <span class="comment">//The credentials resolver.</span>
+<span id="SqliteConnectionResolver.CredentialResolver"></span>    CredentialResolver <a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-components-gox/auth/">auth</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-components-gox/auth/#CredentialResolver">CredentialResolver</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewSqliteConnectionResolver">func <a href="http://localhost:6060/src/connect/SqliteConnectionResolver.go?s=1773:1833#L32">NewSqliteConnectionResolver</a>
+					<a class="permalink" href="index.html#NewSqliteConnectionResolver">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func NewSqliteConnectionResolver() *<a href="index.html#SqliteConnectionResolver">SqliteConnectionResolver</a></pre>
+				<p>
+NewSqliteConnectionResolver creates new connection resolver
+</p>
+<pre>Returns: *SqliteConnectionResolver
+</pre>
+
+				
+				
+			
+
+			
+				
+				<h3 id="SqliteConnectionResolver.Configure">func (*SqliteConnectionResolver) <a href="http://localhost:6060/src/connect/SqliteConnectionResolver.go?s=2233:2326#L44">Configure</a>
+					<a class="permalink" href="index.html#SqliteConnectionResolver.Configure">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnectionResolver">SqliteConnectionResolver</a>) Configure(ctx <a href="http://localhost:6060/pkg/context/">context</a>.<a href="http://localhost:6060/pkg/context/#Context">Context</a>, config *<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/config/">cconf</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/config/#ConfigParams">ConfigParams</a>)</pre>
+				<p>
+Configure is configures component by passing configuration parameters.
+</p>
+<pre>Parameters:
+	- ctx context.Context
+	- config  *cconf.ConfigParams configuration parameters to be set.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="SqliteConnectionResolver.Resolve">func (*SqliteConnectionResolver) <a href="http://localhost:6060/src/connect/SqliteConnectionResolver.go?s=4614:4723#L112">Resolve</a>
+					<a class="permalink" href="index.html#SqliteConnectionResolver.Resolve">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnectionResolver">SqliteConnectionResolver</a>) Resolve(ctx <a href="http://localhost:6060/pkg/context/">context</a>.<a href="http://localhost:6060/pkg/context/#Context">Context</a>, correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (uri <a href="http://localhost:6060/pkg/builtin/#string">string</a>, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Resolve method are resolves SQLite connection URI from connection and credential parameters.
+</p>
+<pre>Parameters:
+	- ctx context.Context
+	- correlationId  string (optional) transaction id to trace execution through call chain.
+Returns: uri string, err error resolved URI and error, if this occured.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="SqliteConnectionResolver.SetReferences">func (*SqliteConnectionResolver) <a href="http://localhost:6060/src/connect/SqliteConnectionResolver.go?s=2623:2723#L54">SetReferences</a>
+					<a class="permalink" href="index.html#SqliteConnectionResolver.SetReferences">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#SqliteConnectionResolver">SqliteConnectionResolver</a>) SetReferences(ctx <a href="http://localhost:6060/pkg/context/">context</a>.<a href="http://localhost:6060/pkg/context/#Context">Context</a>, references <a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/refer/">crefer</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-gox/pip-services3-commons-gox/refer/#IReferences">IReferences</a>)</pre>
+				<p>
+SetReferences is sets references to dependent components.
+</p>
+<pre>Parameters:
+	- ctx context.Context,
+	- references crefer.IReferences references to locate the component dependencies.
+</pre>
+
+				
+				
+				
+			
+		
+	
+
+	
+
+
+
+
+
+
+
+<div id="footer">
+Build version go1.18.7.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="http://localhost:6060/LICENSE">BSD license</a>.<br>
+<a href="https://golang.org/doc/tos.html">Terms of Service</a> |
+<a href="https://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+</body>
+</html>

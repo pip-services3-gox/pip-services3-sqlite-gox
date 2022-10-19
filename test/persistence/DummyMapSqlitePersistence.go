@@ -8,12 +8,12 @@ import (
 )
 
 type DummyMapSqlitePersistence struct {
-	persist.IdentifiableSqlitePersistence[map[string]any, string]
+	*persist.IdentifiableSqlitePersistence[map[string]any, string]
 }
 
 func NewDummyMapSqlitePersistence() *DummyMapSqlitePersistence {
 	c := &DummyMapSqlitePersistence{}
-	c.IdentifiableSqlitePersistence = *persist.InheritIdentifiableSqlitePersistence[map[string]any, string](c, "dummies")
+	c.IdentifiableSqlitePersistence = persist.InheritIdentifiableSqlitePersistence[map[string]any, string](c, "dummies")
 	return c
 }
 

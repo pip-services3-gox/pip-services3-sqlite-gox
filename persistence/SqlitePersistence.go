@@ -7,7 +7,6 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	cconf "github.com/pip-services3-gox/pip-services3-commons-gox/config"
@@ -54,6 +53,85 @@ type ISqlitePersistenceOverrides[T any] interface {
 //		- *:logger:*:*:1.0           (optional) ILogger components to pass log messages
 //		- *:discovery:*:*:1.0        (optional) IDiscovery services
 //		- *:credential-store:*:*:1.0 (optional) Credential stores to resolve credentials
+// Example:
+//	type MySqlitePersistence struct {
+//		*persist.SqlitePersistence[MyData]
+//	}
+//
+//	func NewMySqlitePersistence() *MySqlitePersistence {
+//		c := &MySqlitePersistence{}
+//		c.SqlitePersistence = persist.InheritSqlitePersistence[MyData](c, "mydata")
+//		return c
+//	}
+//
+//	func (c *MySqlitePersistence) DefineSchema() {
+//		c.ClearSchema()
+//		c.SqlitePersistence.DefineSchema()
+//		// Row name must be in double quotes for properly case!!!
+//		c.EnsureSchema("CREATE TABLE " + c.QuotedTableName() + " (\"id\" TEXT PRIMARY KEY, \"key\" TEXT, \"content\" TEXT)")
+//		c.EnsureIndex(c.SqlitePersistence.TableName+"_key", map[string]string{"key": "1"}, map[string]string{"unique": "true"})
+//	}
+//
+//	func (c *MySqlitePersistence) GetOneById(ctx context.Context, correlationId string, name string) (item MyData, err error) {
+//		query := "SELECT * FROM " + c.QuotedTableName() + " WHERE \"name\"=$1"
+//
+//		qResult, err := c.Client.QueryContext(ctx, query, name)
+//		if err != nil {
+//			return item, err
+//		}
+//		defer qResult.Close()
+//
+//		if !qResult.Next() {
+//			return item, qResult.Err()
+//		}
+//
+//		result, err := c.Overrides.ConvertToPublic(qResult)
+//
+//		if err == nil {
+//			c.Logger.Trace(ctx, correlationId, "Retrieved from %s with name = %s", c.TableName, name)
+//			return result, err
+//		}
+//		c.Logger.Trace(ctx, correlationId, "Nothing found from %s with name = %s", c.TableName, name)
+//		return item, err
+//	}
+//
+//	func (c *MySqlitePersistence) Set(ctx context.Context, correlationId string, item MyData) (result MyData, err error) {
+//		objMap, convErr := c.Overrides.ConvertFromPublic(item)
+//		if convErr != nil {
+//			return result, convErr
+//		}
+//
+//		columns, values := c.GenerateColumnsAndValues(objMap)
+//
+//		paramsStr := c.GenerateParameters(len(values))
+//		columnsStr := c.GenerateColumns(columns)
+//		setParams := c.GenerateSetParameters(columns)
+//
+//		id := objMap["id"]
+//
+//		query := "INSERT INTO " + c.QuotedTableName() + " (" + columnsStr + ")" +
+//			" VALUES (" + paramsStr + ")" +
+//			" ON CONFLICT (\"id\") DO UPDATE SET " + setParams + " RETURNING *"
+//
+//		qResult, err := c.Client.QueryContext(ctx, query, values...)
+//		if err != nil {
+//			return result, err
+//		}
+//		defer qResult.Close()
+//
+//		if !qResult.Next() {
+//			return result, qResult.Err()
+//		}
+//
+//		result, convErr = c.Overrides.ConvertToPublic(qResult)
+//		if convErr == nil {
+//			c.Logger.Trace(ctx, correlationId, "Set in %s with id = %s", c.TableName, id)
+//			return result, nil
+//		} else {
+//			return result, convErr
+//		}
+//	}
+//
 type SqlitePersistence[T any] struct {
 	Overrides ISqlitePersistenceOverrides[T]
 	// Defines general JSON convertors
@@ -451,13 +529,12 @@ func (c *SqlitePersistence[T]) Clear(ctx context.Context, correlationId string) 
 		return errors.New("Table name is not defined")
 	}
 
-	rows, err := c.Client.QueryContext(ctx, "DELETE FROM "+c.QuotedTableName())
+	_, err := c.Client.ExecContext(ctx, "DELETE FROM "+c.QuotedTableName())
 	if err != nil {
 		return cerr.
 			NewConnectionError(correlationId, "CONNECT_FAILED", "Connection to sqlite failed: "+err.Error()).
 			WithCause(err)
 	}
-	rows.Close()
 	return nil
 }
 
@@ -475,25 +552,25 @@ func (c *SqlitePersistence[T]) CreateSchema(ctx context.Context, correlationId s
 	}
 	c.Logger.Debug(ctx, correlationId, "Table "+c.QuotedTableName()+" does not exist. Creating database objects...")
 
-	// for _, dml := range c.schemaStatements {
-	// 	_, err := c.Client.ExecContext(ctx, dml)
-	// 	if err != nil {
-	// 		c.Logger.Error(ctx, correlationId, err, "Failed to autocreate database object")
-	// 		return err
-	// 	}
-	// }
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for _, dml := range c.schemaStatements {
-			_, err := c.Client.ExecContext(ctx, dml)
-			if err != nil {
-				c.Logger.Error(ctx, correlationId, err, "Failed to autocreate database object")
-			}
+	for _, dml := range c.schemaStatements {
+		_, err := c.Client.ExecContext(ctx, dml)
+		if err != nil {
+			c.Logger.Error(ctx, correlationId, err, "Failed to autocreate database object")
+			return err
 		}
-	}()
-	wg.Wait()
+	}
+	// wg := sync.WaitGroup{}
+	// wg.Add(1)
+	// go func() {
+	// 	defer wg.Done()
+	// 	for _, dml := range c.schemaStatements {
+	// 		_, err := c.Client.ExecContext(ctx, dml)
+	// 		if err != nil {
+	// 			c.Logger.Error(ctx, correlationId, err, "Failed to autocreate database object")
+	// 		}
+	// 	}
+	// }()
+	// wg.Wait()
 	return nil
 }
 
@@ -625,10 +702,12 @@ func (c *SqlitePersistence[T]) GetPageByFilter(ctx context.Context, correlationI
 	if len(sort) > 0 {
 		query += " ORDER BY " + sort
 	}
+
+	query += " LIMIT " + strconv.FormatInt(take, 10)
+
 	if skip >= 0 {
 		query += " OFFSET " + strconv.FormatInt(skip, 10)
 	}
-	query += " LIMIT " + strconv.FormatInt(take, 10)
 
 	rows, err := c.Client.QueryContext(ctx, query)
 	if err != nil {
@@ -636,7 +715,7 @@ func (c *SqlitePersistence[T]) GetPageByFilter(ctx context.Context, correlationI
 	}
 	defer rows.Close()
 
-	items := make([]T, 0, 0)
+	items := make([]T, 0)
 	for rows.Next() {
 		if c.IsTerminated() {
 			rows.Close()
@@ -797,7 +876,7 @@ func (c *SqlitePersistence[T]) GetOneRandom(ctx context.Context, correlationId s
 	if len(filter) > 0 {
 		query += " WHERE " + filter
 	}
-	query += " OFFSET " + strconv.FormatInt(pos, 10) + " LIMIT 1"
+	query += " LIMIT 1" + " OFFSET " + strconv.FormatInt(pos, 10)
 
 	rows, err := c.Client.QueryContext(ctx, query)
 	if err != nil {
@@ -837,7 +916,7 @@ func (c *SqlitePersistence[T]) Create(ctx context.Context, correlationId string,
 	paramsStr := c.GenerateParameters(len(values))
 
 	query := "INSERT INTO " + c.QuotedTableName() +
-		" (" + columnsStr + ") VALUES (" + paramsStr + ")"
+		" (" + columnsStr + ") VALUES (" + paramsStr + ") RETURNING *"
 
 	rows, err := c.Client.QueryContext(ctx, query, values...)
 	if err != nil {

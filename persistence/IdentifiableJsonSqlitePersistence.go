@@ -68,7 +68,7 @@ import (
 //			key, ok := filter.GetAsNullableString("Key")
 //			filterObj := ""
 //			if ok && key != "" {
-//				filterObj += "data->key='" + key + "'"
+//				filterObj += "JSON_EXTRACT(data, '$.key')='" + key + "'"
 //			}
 //
 //			return c.IdentifiableJsonSqlitePersistence.GetPageByFilter(ctx, correlationId,
@@ -82,7 +82,7 @@ import (
 //
 //			filterObj := ""
 //			if key, ok := filter.GetAsNullableString("Key"); ok && key != "" {
-//				filterObj += "data->key='" + key + "'"
+//				filterObj += "JSON_EXTRACT(data, '$.key')='" + key + "'"
 //			}
 //
 //			return c.IdentifiableJsonSqlitePersistence.GetCountByFilter(ctx, correlationId, filterObj)
@@ -131,41 +131,42 @@ func (c *IdentifiableJsonSqlitePersistence[T, K]) EnsureTable(idType string, dat
 //	Returns: converted object in public format.
 func (c *IdentifiableJsonSqlitePersistence[T, K]) ConvertToPublic(rows *sql.Rows) (T, error) {
 	var defaultValue T
-
 	columns, err := rows.Columns()
-	if err != nil || columns == nil || len(columns) == 0 {
+	if err != nil {
 		return defaultValue, err
 	}
+	// Make a slice for the values
+	values := make([]sql.RawBytes, len(columns))
 
-	values := make([]interface{}, len(columns))
-	pointers := make([]interface{}, len(columns))
+	// rows.Scan wants '[]interface{}' as an argument, so we must copy the
+	// references into such a slice
+	// See http://code.google.com/p/go-wiki/wiki/InterfaceSlice for details
+	scanArgs := make([]interface{}, len(values))
 	for i := range values {
-		pointers[i] = &values[i]
+		scanArgs[i] = &values[i]
 	}
 
-	err = rows.Scan(pointers...)
+	// result map
+	mapItem := make(map[string]string, len(columns))
+
+	// get RawBytes from data
+	err = rows.Scan(scanArgs...)
 	if err != nil {
 		return defaultValue, err
 	}
 
-	buf := make(map[string]interface{}, 0)
-
-	for index, column := range columns {
-		buf[column] = values[index]
+	for i := 0; i < len(columns); i++ {
+		// Here we can check if the value is nil (NULL value)
+		mapItem[columns[i]] = string(values[i])
 	}
 
-	item, ok := buf["data"]
-	if !ok {
-		item = buf
+	if err = rows.Err(); err != nil {
+		return defaultValue, err
 	}
 
-	_buf, toJsonErr := cconv.JsonConverter.ToJson(item)
-	if toJsonErr != nil {
-		return defaultValue, toJsonErr
-	}
+	item, fromJsonErr := c.JsonConvertor.FromJson(mapItem["data"])
 
-	_item, fromJsonErr := c.IdentifiableSqlitePersistence.JsonConvertor.FromJson(_buf)
-	return _item, fromJsonErr
+	return item, fromJsonErr
 }
 
 // ConvertFromPublic convert object value from public to internal format.
@@ -212,9 +213,14 @@ func (c *IdentifiableJsonSqlitePersistence[T, K]) ConvertFromPublicPartial(value
 // Returns: receives updated item or error.
 func (c *IdentifiableJsonSqlitePersistence[T, K]) UpdatePartially(ctx context.Context, correlationId string,
 	id K, data cdata.AnyValueMap) (result T, err error) {
+	dataVals, convErr := cconv.JsonConverter.ToJson(data.Value())
+	if convErr != nil {
+		return result, convErr
+	}
 
-	query := "UPDATE " + c.QuotedTableName() + " SET data=JSON_PATCH(data,?) WHERE id=?"
-	values := []any{id, data.Value()}
+	query := "UPDATE " + c.QuotedTableName() + " SET data=JSON_PATCH(data,$1) WHERE id=$2 RETURNING *"
+
+	values := []any{dataVals, id}
 
 	qResult, err := c.IdentifiableSqlitePersistence.Client.QueryContext(ctx, query, values...)
 	if err != nil {
@@ -226,7 +232,7 @@ func (c *IdentifiableJsonSqlitePersistence[T, K]) UpdatePartially(ctx context.Co
 		return result, qResult.Err()
 	}
 
-	result, convErr := c.Overrides.ConvertToPublic(qResult)
+	result, convErr = c.Overrides.ConvertToPublic(qResult)
 	if convErr == nil {
 		c.IdentifiableSqlitePersistence.Logger.Trace(ctx, correlationId, "Updated partially in %s with id = %s", c.IdentifiableSqlitePersistence.TableName, id)
 		return result, nil

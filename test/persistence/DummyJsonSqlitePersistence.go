@@ -22,7 +22,7 @@ func (c *DummyJsonSqlitePersistence) DefineSchema() {
 	c.ClearSchema()
 	c.IdentifiableJsonSqlitePersistence.DefineSchema()
 	c.EnsureTable("", "")
-	c.EnsureIndex(c.TableName+"_json_key", map[string]string{"(data->'key')": "1"}, map[string]string{"unique": "true"})
+	c.EnsureIndex(c.TableName+"_json_key", map[string]string{"JSON_EXTRACT(data, '$.key')": "1"}, map[string]string{"unique": "true"})
 }
 
 func (c *DummyJsonSqlitePersistence) GetPageByFilter(ctx context.Context, correlationId string,
@@ -31,7 +31,7 @@ func (c *DummyJsonSqlitePersistence) GetPageByFilter(ctx context.Context, correl
 	key, ok := filter.GetAsNullableString("Key")
 	filterObj := ""
 	if ok && key != "" {
-		filterObj += "data->key='" + key + "'"
+		filterObj += "JSON_EXTRACT(data, '$.key')='" + key + "'"
 	}
 
 	return c.IdentifiableJsonSqlitePersistence.GetPageByFilter(ctx, correlationId,
@@ -45,7 +45,7 @@ func (c *DummyJsonSqlitePersistence) GetCountByFilter(ctx context.Context, corre
 
 	filterObj := ""
 	if key, ok := filter.GetAsNullableString("Key"); ok && key != "" {
-		filterObj += "data->key='" + key + "'"
+		filterObj += "JSON_EXTRACT(data, '$.key')='" + key + "'"
 	}
 
 	return c.IdentifiableJsonSqlitePersistence.GetCountByFilter(ctx, correlationId, filterObj)
